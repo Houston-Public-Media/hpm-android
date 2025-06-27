@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="HPM_Blue_Primary">#FF237BBD</color>
+    <color name="HPM_Blue_Secondary">#FF222054</color>
+    <color name="HPM_Gray">#FF404040</color>
+    <color name="HPM_HH_Green">#FF6ABE4F</color>
+    <color name="HPM_HH_Orange">#FFFF7E27</color>
+    <color name="HPM_HH_Periwinkle">#FF7787F7</color>
+    <color name="HPM_HM_Blue">#FF234A93</color>
+    <color name="HPM_Red">#FFC8102E</color>
+    <color name="HPM_Background_Dark">#FF202020</color>
+    <color name="HPM_Background_Light">#D0D0D0</color>
 </resources>
