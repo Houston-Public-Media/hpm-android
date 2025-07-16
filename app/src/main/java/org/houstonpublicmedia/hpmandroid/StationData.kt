@@ -53,7 +53,7 @@ object StationRepository {
     }
     suspend fun updatePriorityData(): PriorityArticleData? {
         return try {
-            client.get("https://cdn.houstonpublicmedia.org/assets/promos-test.json").body<PriorityApiCall>().data
+            client.get("https://www.houstonpublicmedia.org/wp-json/hpm-priority/v1/list").body<PriorityApiCall>().data
         } catch (e: Exception) {
             // Handle exceptions (network error, parsing error, etc.)
             e.printStackTrace()

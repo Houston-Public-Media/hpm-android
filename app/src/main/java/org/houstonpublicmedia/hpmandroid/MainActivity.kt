@@ -21,7 +21,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,10 +28,17 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomAppBar
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
@@ -42,11 +48,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import org.houstonpublicmedia.hpmandroid.ui.theme.*
 
 class MainActivity : ComponentActivity() {
@@ -79,11 +92,30 @@ class MainViewModel : ViewModel() {
     }
 }
 
+@Serializable
+object Today
+@Serializable
+object Listen
+@Serializable
+object Watch
+@Serializable
+object Settings
+
+data class TopLevelRoute<T : Any>(val name: String, val route: T, val icon: Int)
+
+val topLevelRoutes = listOf(
+    TopLevelRoute("Today", Today, R.drawable.home_24px),
+    TopLevelRoute("Listen", Listen, R.drawable.headphones_24px),
+    TopLevelRoute("Watch", Watch, R.drawable.live_tv_24px),
+    TopLevelRoute("Settings", Settings, R.drawable.settings_24px)
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScaffold(data: StationData) {
     val stationData = remember { data }
     val uriHandler = LocalUriHandler.current
+    val navController = rememberNavController()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -97,10 +129,10 @@ fun MainScaffold(data: StationData) {
                             uriHandler.openUri("https://www.houstonpublicmedia.org/donate")
                         },
                         colors = ButtonDefaults.buttonColors(
-                                containerColor = HPM_Red,
-                                contentColor = HPM_White
-                            )
-                        ) {
+                            containerColor = HPM_Red,
+                            contentColor = HPM_White
+                        )
+                    ) {
                         Text("Donate")
                     }
                 },
@@ -115,116 +147,40 @@ fun MainScaffold(data: StationData) {
             )
         },
         bottomBar = {
-            BottomAppBar(
-                containerColor = HPM_Background_Light,
-                contentColor = HPM_Blue_Secondary,
-            ) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    text = "Bottom app bar",
-                )
-            }
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            Today(stationData)
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun Today(data: StationData) {
-    val stationData = remember { data }
-    val scrollState = rememberScrollState()
-    Column {
-        Text("Top Stories")
-        LazyRow(
-            modifier = Modifier
-                .horizontalScroll(scrollState)
-                .padding(all = 8.dp)
-                .width(2700.dp)
-                .height(350.dp)
-        ) {
-            items(stationData.priorityData?.articles ?: emptyList()) { article ->
-                ArticleCard(article)
-            }
-        }
-        stationData.categoryList?.forEach { category ->
-            Text(category.name)
-            if (stationData.categories?.articles[category.id] !== null) {
-                stationData.categories?.articles[category.id]?.forEach { article ->
-                    ArticleRow(article)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun ArticleCard(article: PriorityArticle?) {
-    Column(
-        modifier = Modifier
-            .padding(all = 8.dp)
-            .width(300.dp)
-            .height(350.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .border(1.dp, HPM_Blue_Secondary, RoundedCornerShape(8.dp))
-    ) {
-        AsyncImage(
-            model = article?.picture,
-            contentDescription = article?.excerpt,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(3f / 2f)
-        )
-        article?.title?.let {
-            Text(
-                text = it,
-                color = HPM_Blue_Secondary,
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier
-                    .padding(all = 8.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun ArticleRow(article: ArticleData?) {
-    Row(
-        modifier = Modifier
-            .padding(all = 8.dp)
-            .fillMaxWidth()
-    ) {
-        if (article?.featured_media_url != null) {
-            AsyncImage(
-                model = article.featured_media_url,
-                contentDescription = article.excerpt.rendered,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .width(50.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .aspectRatio(3f / 2f)
-            )
-        }
-        Column {
-            article?.title?.rendered.let {
-                if (it != null) {
-                    Text(
-                        text = it,
-                        color = HPM_Blue_Secondary,
-                        style = MaterialTheme.typography.titleSmall
+            NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentDestination = navBackStackEntry?.destination
+                topLevelRoutes.forEach { topLevelRoute ->
+                    NavigationBarItem(
+                        icon = { Icon(painter = painterResource(id = topLevelRoute.icon), contentDescription = topLevelRoute.name) },
+                        label = { Text(topLevelRoute.name) },
+                        selected = currentDestination?.hierarchy?.any { it.hasRoute(topLevelRoute.route::class) } == true,
+                        onClick = {
+                            navController.navigate(topLevelRoute.route) {
+                                // Pop up to the start destination of the graph to
+                                // avoid building up a large stack of destinations
+                                // on the back stack as users select items
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                // Avoid multiple copies of the same destination when
+                                // reselecting the same item
+                                launchSingleTop = true
+                                // Restore state when reselecting a previously selected item
+                                restoreState = true
+                            }
+                        }
                     )
                 }
             }
+        },
+        containerColor = HPM_Background_Light
+    ) { innerPadding ->
+        NavHost(navController = navController, startDestination = Today, Modifier.padding(innerPadding)) {
+            composable<Today> { TodayScreen(stationData) }
+            composable<Listen> { ListenScreen(stationData) }
+            composable<Watch> { WatchScreen(stationData) }
+            composable<Settings> { SettingsScreen(stationData) }
         }
     }
 }
@@ -238,6 +194,6 @@ fun ArticleRow(article: ArticleData?) {
 @Composable
 fun TodayPreview() {
     HPMAndroidTheme {
-        Today(data = StationData())
+        TodayScreen(data = StationData())
     }
 }
