@@ -43,6 +43,7 @@ android {
 
 dependencies {
     val nav_version = "2.9.1"
+    val media3_version = "1.7.1"
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -59,6 +60,11 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.2.0")
     implementation("androidx.compose.material:material:1.8.3")
     implementation("androidx.compose.material3:material3:1.3.2")
+    implementation("androidx.webkit:webkit:1.8.0")
+    implementation("androidx.browser:browser:1.8.0")
+    implementation("androidx.media3:media3-common:$media3_version")
+    implementation("androidx.media3:media3-exoplayer:$media3_version")
+    implementation("androidx.media3:media3-session:$media3_version")
     // Jetpack Compose integration
     implementation("androidx.navigation:navigation-compose:$nav_version")
 

@@ -319,7 +319,8 @@ data class ArticleData (
     val link: String,
     val title: ArticleDataRendered,
     val excerpt: ArticleDataRendered,
-    val featured_media_url: String
+    val featured_media_url: String,
+    val primary_category: WpCategory
 )
 
 @Serializable

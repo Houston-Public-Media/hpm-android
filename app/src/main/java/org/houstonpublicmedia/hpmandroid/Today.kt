@@ -1,7 +1,9 @@
 package org.houstonpublicmedia.hpmandroid
 
-import android.text.Html
+import android.content.Context
+import android.net.Uri
 import android.util.Log
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -29,19 +31,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.unit.dp
-import androidx.core.text.HtmlCompat
 import coil3.compose.AsyncImage
-import org.houstonpublicmedia.hpmandroid.ui.theme.HPM_Background_Light
-import org.houstonpublicmedia.hpmandroid.ui.theme.HPM_Black
 import org.houstonpublicmedia.hpmandroid.ui.theme.HPM_Blue_Secondary
 import org.houstonpublicmedia.hpmandroid.ui.theme.HPM_Gray
 import org.houstonpublicmedia.hpmandroid.ui.theme.HPM_White
-import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -87,6 +86,7 @@ fun TodayScreen(data: StationData) {
 
 @Composable
 fun ArticleCard(article: PriorityArticle?) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .padding(all = 8.dp)
@@ -95,7 +95,7 @@ fun ArticleCard(article: PriorityArticle?) {
             .clip(RoundedCornerShape(8.dp))
             .border(1.dp, HPM_Gray, RoundedCornerShape(8.dp))
             .background(HPM_White)
-            .clickable { Log.d("HPM Today Screen", "Opening link to " + article?.permalink) }
+            .clickable { context.launchCustomTabs(url = article?.permalink) }
     ) {
         AsyncImage(
             model = article?.picture,
@@ -136,10 +136,11 @@ fun ArticleCard(article: PriorityArticle?) {
 
 @Composable
 fun ArticleRow(article: ArticleData?) {
+    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { Log.d("HPM Today Screen", "Opening link to " + article?.link) }
+            .clickable { context.launchCustomTabs(url = article?.link) }
             .padding(start = 0.dp, end = 0.dp, top = 0.dp, bottom = 8.dp)
     ) {
         Row(
@@ -197,4 +198,8 @@ fun wpDateFormatter(date: String?): String {
     val zonedDateTime = ZonedDateTime.parse("$date+00:00").withZoneSameInstant(ZoneId.systemDefault())
     val formattedString = zonedDateTime.format(DateTimeFormatter.ofPattern("EEE, MMM d, yyyy @ hh:mm a"))
     return formattedString
+}
+
+fun Context.launchCustomTabs(url: String?) {
+    CustomTabsIntent.Builder().build().launchUrl(this, Uri.parse(url))
 }
