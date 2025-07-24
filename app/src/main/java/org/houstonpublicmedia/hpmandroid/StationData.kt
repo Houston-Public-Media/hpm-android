@@ -94,11 +94,9 @@ object StationRepository {
         }
         return HpmCategories(categories)
     }
-    suspend fun pullPodcastEpisodes(podcast: Podcast): Podcast? {
+    suspend fun pullPodcastEpisodes(podcast: String): List<PodcastEpisode>? {
         try {
-            var podTemp = podcast
-            podTemp.episodelist = client.get(podcast.feed_json).body<PodcastDetailApiCall>().data.feed.items
-            return podTemp
+            return client.get(podcast).body<PodcastDetailApiCall>().data.feed.items
         } catch (e: Exception) {
             // Handle exceptions (network error, parsing error, etc.)
             e.printStackTrace()
@@ -106,8 +104,6 @@ object StationRepository {
         }
         return null
     }
-
-
 }
 
 @Serializable

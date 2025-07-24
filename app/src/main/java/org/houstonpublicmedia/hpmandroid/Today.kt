@@ -126,9 +126,10 @@ fun ArticleCard(article: PriorityArticle?) {
                 )
             }
             Icon(
-                painter = painterResource(id = R.drawable.arrow_outward_24px),
+                painter = painterResource(id = R.drawable.arrow_outward),
                 contentDescription = "Open link to article",
-                tint = HPM_Blue_Secondary
+                tint = HPM_Blue_Secondary,
+                modifier = Modifier.width(35.dp).height(35.dp)
             )
         }
     }
@@ -184,11 +185,12 @@ fun ArticleRow(article: ArticleData?) {
                 }
             }
             Icon(
-                painter = painterResource(id = R.drawable.arrow_outward_24px),
+                painter = painterResource(id = R.drawable.arrow_outward),
                 contentDescription = "Open link to article",
                 tint = HPM_Blue_Secondary,
                 modifier = Modifier
                     .padding(horizontal = 4.dp)
+                    .width(35.dp).height(35.dp)
             )
         }
     }

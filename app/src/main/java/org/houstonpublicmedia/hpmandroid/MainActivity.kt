@@ -2,13 +2,20 @@ package org.houstonpublicmedia.hpmandroid
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,7 +25,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
@@ -29,17 +40,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.session.MediaController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import coil3.compose.AsyncImage
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.houstonpublicmedia.hpmandroid.ui.theme.*
@@ -64,14 +80,19 @@ class MainViewModel : ViewModel() {
 
     var audioManager by mutableStateOf(AudioManager())
         private set
+
     fun loadStationData() {
         viewModelScope.launch { // Use viewModelScope for automatic cancellation
             stationData.priorityData = StationRepository.updatePriorityData()
             stationData.promos = StationRepository.updatePromos()
-            stationData.nowPlaying = StationRepository.updateNowPlaying()
             stationData.streams = StationRepository.updateStreams()
             stationData.podcasts = StationRepository.updatePodcasts()
             stationData.categories = StationRepository.updateCategories(stationData.categoryList)
+            while (true) {
+                stationData.nowPlaying = StationRepository.updateNowPlaying()
+                Log.d("MainViewModel", "Updated Now Playing")
+                delay(60000L)
+            }
         }
     }
 }
@@ -79,7 +100,11 @@ class MainViewModel : ViewModel() {
 @Serializable
 object Today
 @Serializable
+object AudioList
+@Serializable
 object Listen
+@Serializable
+data class PodcastDetail(val index: Int)
 @Serializable
 object Watch
 @Serializable
@@ -88,10 +113,10 @@ object Settings
 data class TopLevelRoute<T : Any>(val name: String, val route: T, val icon: Int)
 
 val topLevelRoutes = listOf(
-    TopLevelRoute("Today", Today, R.drawable.home_24px),
-    TopLevelRoute("Listen", Listen, R.drawable.headphones_24px),
-    TopLevelRoute("Watch", Watch, R.drawable.live_tv_24px),
-    TopLevelRoute("Settings", Settings, R.drawable.settings_24px)
+    TopLevelRoute("Today", Today, R.drawable.news),
+    TopLevelRoute("Listen", AudioList, R.drawable.headphones),
+    TopLevelRoute("Watch", Watch, R.drawable.live_tv),
+    TopLevelRoute("Settings", Settings, R.drawable.settings)
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -133,13 +158,103 @@ fun MainScaffold(data: StationData, audioManager: AudioManager) {
                 }
             )
         },
+        snackbarHost = {
+            if (playback.state != AudioManager.StateType.stopped) {
+                BottomAppBar(
+                    actions = {
+                        AsyncImage(
+                            model = data.streams?.audio[playback.currentStation ?: 0]?.artwork,
+                            contentDescription = data.streams?.audio[playback.currentStation ?: 0]?.name,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .width(60.dp)
+                                .height(60.dp)
+                                .padding(all = 8.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                        )
+                        IconButton(
+                            onClick = {
+                                if (playback.state == AudioManager.StateType.playing) {
+                                    playback.player?.pause()
+                                    playback.state = AudioManager.StateType.paused
+                                } else {
+                                    playback.player?.play()
+                                    playback.state = AudioManager.StateType.playing
+                                }
+                            }
+                        ) {
+                            if (playback.state == AudioManager.StateType.playing) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.pause),
+                                    contentDescription = "Pause " + data.streams?.audio[playback.currentStation
+                                        ?: 0]?.name + " Stream",
+                                    tint = HPM_Blue_Secondary,
+                                    modifier = Modifier.padding(horizontal = 4.dp).width(35.dp)
+                                )
+                            } else {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.play_arrow),
+                                    contentDescription = "Play " + data.streams?.audio[playback.currentStation ?: 0]?.name + " Stream",
+                                    tint = HPM_Blue_Secondary,
+                                    modifier = Modifier.padding(horizontal = 4.dp).width(35.dp)
+                                )
+                            }
+                        }
+                        Row(
+                            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                        ) {
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                data.streams?.audio[playback.currentStation ?: 0]?.name?.let {
+                                    Text(
+                                        text = it,
+                                        color = HPM_Blue_Secondary,
+                                        fontSize = 16.sp,
+                                        fontWeight = MaterialTheme.typography.titleMedium.fontWeight,
+                                        modifier = Modifier
+                                            .padding(start = 4.dp, end = 4.dp, top = 0.dp, bottom = 0.dp)
+                                    )
+                                }
+                                Text(
+                                    text = nowPlayingCleanup(data.nowPlaying?.radio[playback.currentStation ?: 0]),
+                                    color = HPM_Blue_Secondary,
+                                    fontSize = 12.sp,
+                                    modifier = Modifier
+                                        .padding(start = 4.dp, end = 4.dp, top = 0.dp, bottom = 0.dp)
+                                )
+                            }
+                        }
+                    },
+                    floatingActionButton = {
+                        FloatingActionButton(
+                            onClick = { /* do something */ },
+                            containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
+                            elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.keyboard_arrow_up),
+                                "Localized description"
+                            )
+                        }
+                    }
+                )
+            }
+        },
         bottomBar = {
             NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
                 topLevelRoutes.forEach { topLevelRoute ->
                     NavigationBarItem(
-                        icon = { Icon(painter = painterResource(id = topLevelRoute.icon), contentDescription = topLevelRoute.name) },
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = topLevelRoute.icon),
+                                contentDescription = topLevelRoute.name,
+                                modifier = Modifier.width(35.dp).height(35.dp),
+                                tint = HPM_Blue_Secondary
+                            )
+                       },
                         label = { Text(topLevelRoute.name) },
                         selected = currentDestination?.hierarchy?.any { it.hasRoute(topLevelRoute.route::class) } == true,
                         onClick = {
@@ -165,7 +280,23 @@ fun MainScaffold(data: StationData, audioManager: AudioManager) {
     ) { innerPadding ->
         NavHost(navController = navController, startDestination = Today, Modifier.padding(innerPadding)) {
             composable<Today> { TodayScreen(stationData) }
-            composable<Listen> { ListenScreen(stationData, playback) }
+            navigation<AudioList>(startDestination = Listen) {
+                composable<Listen> {
+                    ListenScreen(
+                        stationData,
+                        playback,
+                        navController = navController
+                    )
+                }
+                composable<PodcastDetail> {
+                    PodcastScreen(
+                        stationData,
+                        playback,
+                        navController = navController,
+                        index = it.arguments?.getInt("index") ?: 0
+                    )
+                }
+            }
             composable<Watch> { WatchScreen(stationData) }
             composable<Settings> { SettingsScreen(stationData) }
         }
@@ -181,6 +312,8 @@ fun MainScaffold(data: StationData, audioManager: AudioManager) {
 @Composable
 fun TodayPreview() {
     HPMAndroidTheme {
-        TodayScreen(data = StationData())
+        HPMAndroidTheme {
+            MainScaffold(StationData(), AudioManager())
+        }
     }
 }

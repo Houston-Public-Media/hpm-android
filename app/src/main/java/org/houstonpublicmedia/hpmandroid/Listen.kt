@@ -1,5 +1,6 @@
 package org.houstonpublicmedia.hpmandroid
 
+import android.os.Bundle
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -7,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -16,7 +18,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,14 +26,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.media3.session.MediaController
+import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import org.houstonpublicmedia.hpmandroid.ui.theme.HPM_Blue_Secondary
 import org.houstonpublicmedia.hpmandroid.ui.theme.HPM_Gray
 import org.houstonpublicmedia.hpmandroid.ui.theme.HPM_White
 
 @Composable
-fun ListenScreen(data: StationData, playback: AudioManager) {
+fun ListenScreen(data: StationData, playback: AudioManager, navController: NavHostController) {
     Column(
         modifier = Modifier
             .padding(all = 8.dp)
@@ -98,17 +99,17 @@ fun ListenScreen(data: StationData, playback: AudioManager) {
                     }
                     if (playback.state == AudioManager.StateType.playing && playback.currentStation == station.id) {
                         Icon(
-                            painter = painterResource(id = R.drawable.pause_24px),
+                            painter = painterResource(id = R.drawable.pause),
                             contentDescription = "Pause " + station.name + " Stream",
                             tint = HPM_Blue_Secondary,
-                            modifier = Modifier.padding(horizontal = 4.dp)
+                            modifier = Modifier.padding(horizontal = 4.dp).width(35.dp).height(35.dp)
                         )
                     } else {
                         Icon(
-                            painter = painterResource(id = R.drawable.play_arrow_24px),
+                            painter = painterResource(id = R.drawable.play_arrow),
                             contentDescription = "Play " + station.name + " Stream",
                             tint = HPM_Blue_Secondary,
-                            modifier = Modifier.padding(horizontal = 4.dp)
+                            modifier = Modifier.padding(horizontal = 4.dp).width(35.dp).height(35.dp)
                         )
                     }
                 }
@@ -119,11 +120,16 @@ fun ListenScreen(data: StationData, playback: AudioManager) {
             modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
             fontWeight = FontWeight.Bold
         )
-        data.podcasts?.list?.forEach { podcast ->
+        data.podcasts?.list?.forEachIndexed { index, podcast ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { Log.d("Listen Screen", "Go to " + podcast.name + " episode list") }
+                    .clickable {
+                        Log.d("Listen Screen", "Go to " + podcast.name + " episode list, index: " + index.toString())
+                        navController.navigate(
+                            route = PodcastDetail(index)
+                        )
+                    }
                     .padding(start = 0.dp, end = 0.dp, top = 0.dp, bottom = 8.dp)
             ) {
                 Row(
@@ -152,10 +158,10 @@ fun ListenScreen(data: StationData, playback: AudioManager) {
                             .weight(1f)
                     )
                     Icon(
-                        painter = painterResource(R.drawable.chevron_right_24px),
+                        painter = painterResource(R.drawable.chevron_right),
                         contentDescription = "Go to " + podcast.name + " episode list",
                         tint = HPM_Blue_Secondary,
-                        modifier = Modifier.padding(horizontal = 4.dp)
+                        modifier = Modifier.padding(horizontal = 4.dp).width(35.dp).height(35.dp)
                     )
                 }
             }
