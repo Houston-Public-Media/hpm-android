@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 
 @Composable
-fun WatchScreen(data: StationData) {
+fun WatchScreen() {
     // Declare a string that contains a url
     val mUrl = "https://cdn.houstonpublicmedia.org/assets/watch-live.html"
 

@@ -42,6 +42,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.ui.text.google.fonts)
     val nav_version = "2.9.1"
     val media3_version = "1.7.1"
     implementation(libs.androidx.core.ktx)

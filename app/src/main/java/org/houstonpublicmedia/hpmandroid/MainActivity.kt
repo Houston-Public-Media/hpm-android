@@ -30,6 +30,7 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
@@ -132,8 +133,8 @@ fun MainScaffold(data: StationData, audioManager: AudioManager) {
         topBar = {
             TopAppBar(
                 colors = topAppBarColors(
-                    containerColor = HPM_Blue_Secondary,
-                    titleContentColor = HPM_White
+                    containerColor = colorScheme.primaryContainer,
+                    titleContentColor = colorScheme.onPrimary,
                 ),
                 actions = {
                     Button(
@@ -141,8 +142,8 @@ fun MainScaffold(data: StationData, audioManager: AudioManager) {
                             uriHandler.openUri("https://www.houstonpublicmedia.org/donate")
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = HPM_Red,
-                            contentColor = HPM_White
+                            containerColor = colorScheme.tertiaryContainer,
+                            contentColor = colorScheme.onTertiary
                         )
                     ) {
                         Text("Donate")
@@ -188,14 +189,14 @@ fun MainScaffold(data: StationData, audioManager: AudioManager) {
                                     painter = painterResource(id = R.drawable.pause),
                                     contentDescription = "Pause " + data.streams?.audio[playback.currentStation
                                         ?: 0]?.name + " Stream",
-                                    tint = HPM_Blue_Secondary,
+                                    //tint = HPM_Blue_Secondary,
                                     modifier = Modifier.padding(horizontal = 4.dp).width(35.dp)
                                 )
                             } else {
                                 Icon(
                                     painter = painterResource(id = R.drawable.play_arrow),
                                     contentDescription = "Play " + data.streams?.audio[playback.currentStation ?: 0]?.name + " Stream",
-                                    tint = HPM_Blue_Secondary,
+                                    //tint = HPM_Blue_Secondary,
                                     modifier = Modifier.padding(horizontal = 4.dp).width(35.dp)
                                 )
                             }
@@ -209,7 +210,7 @@ fun MainScaffold(data: StationData, audioManager: AudioManager) {
                                 data.streams?.audio[playback.currentStation ?: 0]?.name?.let {
                                     Text(
                                         text = it,
-                                        color = HPM_Blue_Secondary,
+                                        //color = HPM_Blue_Secondary,
                                         fontSize = 16.sp,
                                         fontWeight = MaterialTheme.typography.titleMedium.fontWeight,
                                         modifier = Modifier
@@ -218,7 +219,7 @@ fun MainScaffold(data: StationData, audioManager: AudioManager) {
                                 }
                                 Text(
                                     text = nowPlayingCleanup(data.nowPlaying?.radio[playback.currentStation ?: 0]),
-                                    color = HPM_Blue_Secondary,
+                                    //color = HPM_Blue_Secondary,
                                     fontSize = 12.sp,
                                     modifier = Modifier
                                         .padding(start = 4.dp, end = 4.dp, top = 0.dp, bottom = 0.dp)
@@ -252,7 +253,7 @@ fun MainScaffold(data: StationData, audioManager: AudioManager) {
                                 painter = painterResource(id = topLevelRoute.icon),
                                 contentDescription = topLevelRoute.name,
                                 modifier = Modifier.width(35.dp).height(35.dp),
-                                tint = HPM_Blue_Secondary
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                        },
                         label = { Text(topLevelRoute.name) },
@@ -276,7 +277,7 @@ fun MainScaffold(data: StationData, audioManager: AudioManager) {
                 }
             }
         },
-        containerColor = HPM_Background_Light
+        containerColor = colorScheme.background
     ) { innerPadding ->
         NavHost(navController = navController, startDestination = Today, Modifier.padding(innerPadding)) {
             composable<Today> { TodayScreen(stationData) }
@@ -297,7 +298,7 @@ fun MainScaffold(data: StationData, audioManager: AudioManager) {
                     )
                 }
             }
-            composable<Watch> { WatchScreen(stationData) }
+            composable<Watch> { WatchScreen() }
             composable<Settings> { SettingsScreen(stationData) }
         }
     }
@@ -312,8 +313,6 @@ fun MainScaffold(data: StationData, audioManager: AudioManager) {
 @Composable
 fun TodayPreview() {
     HPMAndroidTheme {
-        HPMAndroidTheme {
-            MainScaffold(StationData(), AudioManager())
-        }
+       MainScaffold(StationData(), AudioManager())
     }
 }

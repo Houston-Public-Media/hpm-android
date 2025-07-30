@@ -28,9 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
-import org.houstonpublicmedia.hpmandroid.ui.theme.HPM_Blue_Secondary
-import org.houstonpublicmedia.hpmandroid.ui.theme.HPM_Gray
-import org.houstonpublicmedia.hpmandroid.ui.theme.HPM_White
 
 @Composable
 fun ListenScreen(data: StationData, playback: AudioManager, navController: NavHostController) {
@@ -64,9 +61,9 @@ fun ListenScreen(data: StationData, playback: AudioManager, navController: NavHo
             ) {
                 Row(
                     modifier = Modifier
-                        .border(1.dp, HPM_Gray, RoundedCornerShape(8.dp))
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(HPM_White),
+                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(8.dp)),
+                        //.background(HPM_White),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     AsyncImage(
@@ -83,7 +80,7 @@ fun ListenScreen(data: StationData, playback: AudioManager, navController: NavHo
                     ) {
                         Text(
                             text = station.name,
-                            color = HPM_Blue_Secondary,
+                            //color = HPM_Blue_Secondary,
                             fontSize = 16.sp,
                             fontWeight = MaterialTheme.typography.titleMedium.fontWeight,
                             modifier = Modifier
@@ -91,7 +88,7 @@ fun ListenScreen(data: StationData, playback: AudioManager, navController: NavHo
                         )
                         Text(
                             text = nowPlayingCleanup(data.nowPlaying?.radio[station.id]),
-                            color = HPM_Blue_Secondary,
+                            //color = HPM_Blue_Secondary,
                             fontSize = 12.sp,
                             modifier = Modifier
                                 .padding(start = 0.dp, end = 8.dp, top = 2.dp, bottom = 8.dp)
@@ -101,14 +98,14 @@ fun ListenScreen(data: StationData, playback: AudioManager, navController: NavHo
                         Icon(
                             painter = painterResource(id = R.drawable.pause),
                             contentDescription = "Pause " + station.name + " Stream",
-                            tint = HPM_Blue_Secondary,
+                            //tint = HPM_Blue_Secondary,
                             modifier = Modifier.padding(horizontal = 4.dp).width(35.dp).height(35.dp)
                         )
                     } else {
                         Icon(
                             painter = painterResource(id = R.drawable.play_arrow),
                             contentDescription = "Play " + station.name + " Stream",
-                            tint = HPM_Blue_Secondary,
+                            //tint = HPM_Blue_Secondary,
                             modifier = Modifier.padding(horizontal = 4.dp).width(35.dp).height(35.dp)
                         )
                     }
@@ -134,9 +131,9 @@ fun ListenScreen(data: StationData, playback: AudioManager, navController: NavHo
             ) {
                 Row(
                     modifier = Modifier
-                        .border(1.dp, HPM_Gray, RoundedCornerShape(8.dp))
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(HPM_White),
+                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(8.dp)),
+                        //.background(HPM_White),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     AsyncImage(
@@ -150,7 +147,7 @@ fun ListenScreen(data: StationData, playback: AudioManager, navController: NavHo
                     )
                     Text(
                         text = podcast.name,
-                        color = HPM_Blue_Secondary,
+                       // color = HPM_Blue_Secondary,
                         fontSize = 16.sp,
                         fontWeight = MaterialTheme.typography.titleMedium.fontWeight,
                         modifier = Modifier
@@ -160,7 +157,7 @@ fun ListenScreen(data: StationData, playback: AudioManager, navController: NavHo
                     Icon(
                         painter = painterResource(R.drawable.chevron_right),
                         contentDescription = "Go to " + podcast.name + " episode list",
-                        tint = HPM_Blue_Secondary,
+                        //tint = HPM_Blue_Secondary,
                         modifier = Modifier.padding(horizontal = 4.dp).width(35.dp).height(35.dp)
                     )
                 }
@@ -171,10 +168,10 @@ fun ListenScreen(data: StationData, playback: AudioManager, navController: NavHo
 
 fun nowPlayingCleanup(nowPlaying: NowPlayingStation?): String {
     var output = ""
-    if (nowPlaying?.artist?.contains("Houston Public Media") ?: false) {
-        output += nowPlaying.title
+    output += if (nowPlaying?.artist?.contains("Houston Public Media") ?: false) {
+        nowPlaying.title
     } else {
-        output += nowPlaying?.artist + " - " + nowPlaying?.title
+        nowPlaying?.artist + " - " + nowPlaying?.title
     }
     return output
 }

@@ -40,9 +40,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
-import org.houstonpublicmedia.hpmandroid.ui.theme.HPM_Blue_Secondary
-import org.houstonpublicmedia.hpmandroid.ui.theme.HPM_Gray
-import org.houstonpublicmedia.hpmandroid.ui.theme.HPM_White
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -114,9 +111,9 @@ fun PodcastScreen(data: StationData, playback: AudioManager, navController: NavH
                     ) {
                         Row(
                             modifier = Modifier
-                                .border(1.dp, HPM_Gray, RoundedCornerShape(8.dp))
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(HPM_White),
+                                .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
+                                .clip(RoundedCornerShape(8.dp)),
+                                //.background(HPM_White),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             AsyncImage(
@@ -130,7 +127,7 @@ fun PodcastScreen(data: StationData, playback: AudioManager, navController: NavH
                             )
                             Text(
                                 text = episode.title,
-                                color = HPM_Blue_Secondary,
+                                //color = HPM_Blue_Secondary,
                                 fontSize = 16.sp,
                                 fontWeight = MaterialTheme.typography.titleMedium.fontWeight,
                                 modifier = Modifier
@@ -140,7 +137,7 @@ fun PodcastScreen(data: StationData, playback: AudioManager, navController: NavH
                             Icon(
                                 painter = painterResource(R.drawable.play_arrow),
                                 contentDescription = "Go to " + data.podcasts?.list[index]?.name + " episode list",
-                                tint = HPM_Blue_Secondary,
+                                //tint = HPM_Blue_Secondary,
                                 modifier = Modifier.padding(horizontal = 4.dp)
                             )
                         }

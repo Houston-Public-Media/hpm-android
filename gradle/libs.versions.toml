@@ -11,6 +11,7 @@ lifecycleRuntimeKtx = "2.9.0"
 activityCompose = "1.8.0"
 composeBom = "2024.09.00"
 material3Jvmstubs = "1.4.0-alpha18"
+uiTextGoogleFonts = "1.8.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -30,6 +31,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 kotlinx-serialization-json-v220rc3 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.8.1" }
 androidx-material3-jvmstubs = { group = "androidx.compose.material3", name = "material3-jvmstubs", version.ref = "material3Jvmstubs" }
+androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

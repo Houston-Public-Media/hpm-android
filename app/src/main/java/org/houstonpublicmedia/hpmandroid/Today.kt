@@ -38,9 +38,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import org.houstonpublicmedia.hpmandroid.ui.theme.HPM_Blue_Secondary
-import org.houstonpublicmedia.hpmandroid.ui.theme.HPM_Gray
-import org.houstonpublicmedia.hpmandroid.ui.theme.HPM_White
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -93,8 +90,8 @@ fun ArticleCard(article: PriorityArticle?) {
             .width(300.dp)
             .height(325.dp)
             .clip(RoundedCornerShape(8.dp))
-            .border(1.dp, HPM_Gray, RoundedCornerShape(8.dp))
-            .background(HPM_White)
+            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.primaryContainer)
             .clickable { context.launchCustomTabs(url = article?.permalink) }
     ) {
         AsyncImage(
@@ -108,7 +105,7 @@ fun ArticleCard(article: PriorityArticle?) {
         article?.title?.let {
             Text(
                 text = it,
-                color = HPM_Blue_Secondary,
+                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier
                     .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 4.dp)
@@ -119,7 +116,7 @@ fun ArticleCard(article: PriorityArticle?) {
             article?.date_gmt?.let {
                 Text(
                     text = wpDateFormatter(it),
-                    color = HPM_Blue_Secondary,
+                    color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier
                         .weight(1f)
@@ -128,7 +125,7 @@ fun ArticleCard(article: PriorityArticle?) {
             Icon(
                 painter = painterResource(id = R.drawable.arrow_outward),
                 contentDescription = "Open link to article",
-                tint = HPM_Blue_Secondary,
+                tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.width(35.dp).height(35.dp)
             )
         }
@@ -146,9 +143,9 @@ fun ArticleRow(article: ArticleData?) {
     ) {
         Row(
             modifier = Modifier
-                .border(1.dp, HPM_Gray, RoundedCornerShape(8.dp))
-                .clip(RoundedCornerShape(8.dp))
-                .background(HPM_White),
+                .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(8.dp)),
+                //.background(HPM_White),
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (article?.featured_media_url != null) {
@@ -166,7 +163,7 @@ fun ArticleRow(article: ArticleData?) {
                     if (it != null) {
                         Text(
                             text = AnnotatedString.Companion.fromHtml(it),
-                            color = HPM_Blue_Secondary,
+                            //color = HPM_Blue_Secondary,
                             style = MaterialTheme.typography.titleSmall,
                             modifier = Modifier
                                 .padding(start = 0.dp, end = 8.dp, top = 8.dp, bottom = 4.dp)
@@ -176,7 +173,7 @@ fun ArticleRow(article: ArticleData?) {
                 article?.date_gmt?.let {
                     Text(
                         text = wpDateFormatter(it),
-                        color = HPM_Blue_Secondary,
+                        //color = HPM_Blue_Secondary,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier
                             .padding(start = 0.dp, end = 8.dp, top = 4.dp, bottom = 8.dp)
@@ -187,7 +184,7 @@ fun ArticleRow(article: ArticleData?) {
             Icon(
                 painter = painterResource(id = R.drawable.arrow_outward),
                 contentDescription = "Open link to article",
-                tint = HPM_Blue_Secondary,
+                //tint = HPM_Blue_Secondary,
                 modifier = Modifier
                     .padding(horizontal = 4.dp)
                     .width(35.dp).height(35.dp)
