@@ -22,17 +22,6 @@ object StationRepository {
             })
         }
     }
-
-//    // Define a suspend function to fetch and parse the data
-//    suspend fun fetchStationData(url: String): StationData? {
-//        return try {
-//            client.get(url).body<StationData>()
-//        } catch (e: Exception) {
-//            // Handle exceptions (network error, parsing error, etc.)
-//            e.printStackTrace()
-//            null
-//        }
-//    }
     suspend fun updateStreams(): Streams? {
         return try {
             client.get("https://cdn.houstonpublicmedia.org/assets/streams.json").body<Streams>()
@@ -212,7 +201,7 @@ data class PodcastFeedItems (
 @Serializable
 data class PodcastEpisodePlayable (
     val id: Int,
-    val image: PodcastImageCrops,
+    val image: String,
     val podcastName: String,
     val episodeTitle: String,
     val excerpt: String,

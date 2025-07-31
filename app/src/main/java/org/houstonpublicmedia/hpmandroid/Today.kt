@@ -2,12 +2,12 @@ package org.houstonpublicmedia.hpmandroid
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -37,11 +38,14 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import kotlin.collections.forEach
+import java.util.Date
+import java.util.Locale
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,14 +55,45 @@ fun TodayScreen(data: StationData) {
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
-            .padding(all = 8.dp)
+            .padding(all = 0.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Text("Top Stories", fontWeight = FontWeight.Bold)
+        Row(
+            modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp)
+        ) {
+            Text(
+                text = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(Date()),
+                color = colorScheme.onSurface,
+                fontSize = 12.sp,
+                lineHeight = 15.sp
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Row {
+                Text(
+                    text = AnnotatedString.fromHtml(stationData.priorityData?.weather?.temperature ?: "" ),
+                    color = colorScheme.onSurface,
+                    fontSize = 12.sp,
+                    lineHeight = 15.sp
+                )
+                AsyncImage(
+                    model = stationData.priorityData?.weather?.icon,
+                    contentDescription = stationData.priorityData?.weather?.description,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .width(15.dp)
+                        .height(15.dp)
+                )
+            }
+        }
+        Text(
+            text = "Top Stories",
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 0.dp)
+        )
         LazyRow(
             modifier = Modifier
                 .horizontalScroll(scrollState)
-                .padding(all = 8.dp)
+                .padding(start = 0.dp, end = 0.dp, top = 8.dp, bottom = 8.dp)
                 .width(2700.dp)
                 .height(325.dp)
         ) {
@@ -70,11 +105,17 @@ fun TodayScreen(data: StationData) {
             Text(
                 category.name,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
+                modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 16.dp, bottom = 0.dp)
             )
-            if (stationData.categories?.articles[category.id] !== null) {
-                stationData.categories?.articles[category.id]?.forEach { article ->
-                    ArticleRow(article)
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .padding(all = 8.dp)
+            ) {
+                if (stationData.categories?.articles[category.id] !== null) {
+                    stationData.categories?.articles[category.id]?.forEach { article ->
+                        ArticleRow(article)
+                    }
                 }
             }
         }
@@ -90,8 +131,8 @@ fun ArticleCard(article: PriorityArticle?) {
             .width(300.dp)
             .height(325.dp)
             .clip(RoundedCornerShape(8.dp))
-            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colorScheme.primaryContainer)
+            .border(1.dp, colorScheme.outline, RoundedCornerShape(8.dp))
+            .background(colorScheme.primaryContainer)
             .clickable { context.launchCustomTabs(url = article?.permalink) }
     ) {
         AsyncImage(
@@ -105,7 +146,7 @@ fun ArticleCard(article: PriorityArticle?) {
         article?.title?.let {
             Text(
                 text = it,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = colorScheme.onSurface,
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier
                     .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 4.dp)
@@ -116,7 +157,7 @@ fun ArticleCard(article: PriorityArticle?) {
             article?.date_gmt?.let {
                 Text(
                     text = wpDateFormatter(it),
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = colorScheme.onSurface,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier
                         .weight(1f)
@@ -125,8 +166,10 @@ fun ArticleCard(article: PriorityArticle?) {
             Icon(
                 painter = painterResource(id = R.drawable.arrow_outward),
                 contentDescription = "Open link to article",
-                tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.width(35.dp).height(35.dp)
+                tint = colorScheme.primary,
+                modifier = Modifier
+                    .width(35.dp)
+                    .height(35.dp)
             )
         }
     }
@@ -139,57 +182,53 @@ fun ArticleRow(article: ArticleData?) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable { context.launchCustomTabs(url = article?.link) }
-            .padding(start = 0.dp, end = 0.dp, top = 0.dp, bottom = 8.dp)
+            .border(1.dp, colorScheme.outline, RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(8.dp))
+            .background(colorScheme.surfaceBright),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier
-                .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
-                .clip(RoundedCornerShape(8.dp)),
-                //.background(HPM_White),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (article?.featured_media_url != null) {
-                AsyncImage(
-                    model = article.featured_media_url,
-                    contentDescription = article.excerpt.rendered,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .width(75.dp)
-                        .padding(all = 8.dp)
-                )
-            }
-            Column(modifier = Modifier.weight(1f)) {
-                article?.title?.rendered.let {
-                    if (it != null) {
-                        Text(
-                            text = AnnotatedString.Companion.fromHtml(it),
-                            //color = HPM_Blue_Secondary,
-                            style = MaterialTheme.typography.titleSmall,
-                            modifier = Modifier
-                                .padding(start = 0.dp, end = 8.dp, top = 8.dp, bottom = 4.dp)
-                        )
-                    }
-                }
-                article?.date_gmt?.let {
+        if (article?.featured_media_url != "") {
+            AsyncImage(
+                model = article?.featured_media_url,
+                contentDescription = article?.excerpt?.rendered,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .width(75.dp)
+                    .padding(all = 8.dp)
+            )
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            article?.title?.rendered.let {
+                if (it != null) {
                     Text(
-                        text = wpDateFormatter(it),
-                        //color = HPM_Blue_Secondary,
-                        style = MaterialTheme.typography.bodySmall,
+                        text = AnnotatedString.Companion.fromHtml(it),
+                        color = colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier
-                            .padding(start = 0.dp, end = 8.dp, top = 4.dp, bottom = 8.dp)
-                            .align(Alignment.End)
+                            .padding(start = 0.dp, end = 8.dp, top = 8.dp, bottom = 4.dp)
                     )
                 }
             }
-            Icon(
-                painter = painterResource(id = R.drawable.arrow_outward),
-                contentDescription = "Open link to article",
-                //tint = HPM_Blue_Secondary,
-                modifier = Modifier
-                    .padding(horizontal = 4.dp)
-                    .width(35.dp).height(35.dp)
-            )
+            article?.date_gmt?.let {
+                Text(
+                    text = wpDateFormatter(it),
+                    color = colorScheme.outline,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier
+                        .padding(start = 0.dp, end = 8.dp, top = 4.dp, bottom = 8.dp)
+                        .align(Alignment.End)
+                )
+            }
         }
+        Icon(
+            painter = painterResource(id = R.drawable.arrow_outward),
+            contentDescription = "Open link to article",
+            tint = colorScheme.primary,
+            modifier = Modifier
+                .padding(horizontal = 4.dp)
+                .width(35.dp)
+                .height(35.dp)
+        )
     }
 }
 

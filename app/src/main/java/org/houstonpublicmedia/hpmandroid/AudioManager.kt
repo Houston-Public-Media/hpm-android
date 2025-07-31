@@ -28,23 +28,7 @@ class AudioManager () {
     var audioType by mutableStateOf<AudioType>(AudioType.stream)
     var currentEpisode by mutableStateOf<PodcastEpisodePlayable?>(PodcastEpisodePlayable(
         id = 0,
-        image = PodcastImageCrops(
-            full = ImageCrop(
-                url = "",
-                width = 0,
-                height = 0
-            ),
-            medium = ImageCrop(
-                url = "",
-                width = 0,
-                height = 0
-            ),
-            thumbnail = ImageCrop(
-                url = "",
-                width = 0,
-                height = 0
-            )
-        ),
+        image = "",
         podcastName = "",
         episodeTitle = "",
         excerpt = "",
@@ -70,20 +54,45 @@ class AudioManager () {
     }
 
     @OptIn(UnstableApi::class)
-    fun startAudio(station: Station, nowPlaying: NowPlayingStation?) {
-        val mediaItem = MediaItem.Builder()
-            .setMediaId("media-1")
-            .setUri(station.aacSource)
-            .setMimeType(MimeTypes.APPLICATION_ICY)
-            .setMediaMetadata(MediaMetadata.Builder()
-                .setAlbumTitle(nowPlaying?.album)
-                .setArtworkUri(station.artwork.toUri())
-                .build())
-            .build()
+    fun startAudio(audioType: AudioType, station: Station?, nowPlaying: NowPlayingStation?, episode: PodcastEpisodePlayable?): Boolean {
+        var mediaItem: MediaItem? = null
+        if (audioType == AudioType.episode) {
+            if (episode == null) {
+                return false
+            }
+            mediaItem = MediaItem.Builder()
+                .setMediaId("media-1")
+                .setUri(episode.attachments.url)
+                .setMimeType(MimeTypes.APPLICATION_ID3)
+                .setMediaMetadata(MediaMetadata.Builder()
+                    .setAlbumTitle(wpDateFormatter(episode.date_gmt))
+                    .setTitle(episode.episodeTitle)
+                    .setArtist(episode.podcastName)
+                    .setArtworkUri(episode.image.toUri())
+                    .build())
+                .build()
+        } else {
+            if (station == null) {
+                return false
+            }
+            mediaItem = MediaItem.Builder()
+                .setMediaId("media-1")
+                .setUri(station.aacSource)
+                .setMimeType(MimeTypes.APPLICATION_ICY)
+                .setMediaMetadata(MediaMetadata.Builder()
+                    .setAlbumTitle(nowPlaying?.album)
+                    .setTitle(nowPlaying?.title)
+                    .setArtist(nowPlaying?.artist)
+                    .setArtworkUri(station.artwork.toUri())
+                    .build())
+                .build()
+        }
+
         player?.stop()
         player?.setMediaItem(mediaItem)
         player?.prepare()
         player?.play()
+        return true
     }
     fun play() {
         player?.play()

@@ -7,15 +7,20 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun SettingsScreen(data: StationData) {
     Column(
         modifier = Modifier
-            .padding(all = 8.dp)
+            .padding(all = 0.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Text("Settings")
+        Text(
+            "Settings",
+            modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 16.dp, bottom = 4.dp),
+            fontWeight = FontWeight.Bold
+        )
     }
 }
