@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">HPMAndroid</string>
+    <string name="playback_service_attribution_label">HPMAndroid Playback Service</string>
 </resources>

@@ -1,5 +1,6 @@
 package org.houstonpublicmedia.hpmandroid
 
+import android.media.session.PlaybackState
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -58,7 +60,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PodcastScreen(data: StationData, playback: AudioManager, navController: NavHostController, index: Int) {
+fun PodcastScreen(data: StationData, audioManager: AudioManager, navController: NavHostController, index: Int) {
     val episodeListPulled = remember { mutableStateOf(false) }
     val uriHandler = LocalUriHandler.current
     Scaffold(
@@ -202,7 +204,7 @@ fun PodcastScreen(data: StationData, playback: AudioManager, navController: NavH
                             .clickable {
                                 val podEp = PodcastEpisodePlayable(
                                     id = episode.id,
-                                    image = episode.thumbnail,
+                                    image = data.podcasts?.list[index]?.image?.medium?.url ?: "",
                                     podcastName = data.podcasts?.list[index]?.name ?: "",
                                     episodeTitle = AnnotatedString.fromHtml(episode.title).toString(),
                                     excerpt = episode.excerpt,
@@ -211,40 +213,34 @@ fun PodcastScreen(data: StationData, playback: AudioManager, navController: NavH
                                     attachments = episode.attachments,
                                     duration = episode.attachments.duration_in_seconds
                                 )
-                                if (playback.state == AudioManager.StateType.playing) {
-                                    playback.pause()
-                                    if (playback.currentEpisode?.id != episode.id) {
-                                        playback.startAudio(
+                                if (audioManager.playerState?.isPlaying == true) {
+                                    audioManager.pause()
+                                    if (audioManager.currentEpisode?.id != episode.id) {
+                                        audioManager.startAudio(
                                             audioType = AudioManager.AudioType.episode,
                                             station = null,
                                             nowPlaying = null,
                                             episode = podEp
                                         )
-                                        playback.state = AudioManager.StateType.playing
-                                        playback.currentStation = null
-                                        playback.audioType = AudioManager.AudioType.episode
-                                        playback.currentEpisode = podEp
+                                        audioManager.currentStation = episode.id
+                                        audioManager.audioType = AudioManager.AudioType.episode
+                                        audioManager.currentEpisode = podEp
                                     }
                                 } else {
-                                    if (playback.currentEpisode?.id == podEp.id) {
-                                        playback.play()
+                                    if (audioManager.currentEpisode?.id == podEp.id) {
+                                        audioManager.play()
                                     } else {
-                                        playback.startAudio(
+                                        audioManager.startAudio(
                                             audioType = AudioManager.AudioType.episode,
                                             station = null,
                                             nowPlaying = null,
                                             episode = podEp
                                         )
-                                        playback.state = AudioManager.StateType.playing
-                                        playback.currentStation = null
-                                        playback.audioType = AudioManager.AudioType.episode
-                                        playback.currentEpisode = podEp
+                                        audioManager.currentStation = episode.id
+                                        audioManager.audioType = AudioManager.AudioType.episode
+                                        audioManager.currentEpisode = podEp
                                     }
                                 }
-                                Log.d(
-                                    "Podcast Detail Screen",
-                                    "Play " + episode.title
-                                )
                             }
                             .border(1.dp, colorScheme.outline, RoundedCornerShape(8.dp))
                             .clip(RoundedCornerShape(8.dp))
@@ -276,26 +272,37 @@ fun PodcastScreen(data: StationData, playback: AudioManager, navController: NavH
                                 modifier = Modifier
                                     .padding(start = 0.dp, end = 8.dp, top = 8.dp, bottom = 2.dp)
                             )
-                            Text(
-                                text = wpDateFormatter(episode.date_gmt),
-                                color = colorScheme.outline,
-                                fontSize = 12.sp,
-                                lineHeight = 14.sp,
-                                modifier = Modifier
-                                    .padding(start = 0.dp, end = 8.dp, top = 2.dp, bottom = 8.dp)
-                                    .align(Alignment.End)
-                            )
+                            Row() {
+                                Text(
+                                    text = wpDateFormatter(episode.date_gmt),
+                                    color = colorScheme.outline,
+                                    fontSize = 12.sp,
+                                    lineHeight = 14.sp,
+                                    modifier = Modifier
+                                        .padding(start = 0.dp, end = 8.dp, top = 2.dp, bottom = 8.dp)
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Text(
+                                    text = episode.attachments.duration_in_seconds,
+                                    color = colorScheme.outline,
+                                    fontSize = 12.sp,
+                                    lineHeight = 14.sp,
+                                    modifier = Modifier
+                                        .padding(start = 8.dp, end = 0.dp, top = 2.dp, bottom = 8.dp)
+                                )
+                            }
+
                         }
-                        if (playback.state == AudioManager.StateType.playing && playback.currentStation == episode.id) {
+                        if (audioManager.playerState?.isPlaying == true && audioManager.currentStation == episode.id) {
                             Icon(
-                                painter = painterResource(id = R.drawable.pause),
+                                painter = painterResource(id = androidx.media3.session.R.drawable.media3_icon_pause),
                                 contentDescription = "Pause " + episode.title,
                                 tint = colorScheme.primary,
                                 modifier = Modifier.padding(horizontal = 4.dp)
                             )
                         } else {
                             Icon(
-                                painter = painterResource(id = R.drawable.play_arrow),
+                                painter = painterResource(id = androidx.media3.session.R.drawable.media3_icon_play),
                                 contentDescription = "Play " + episode.title,
                                 tint = colorScheme.primary,
                                 modifier = Modifier.padding(horizontal = 4.dp)

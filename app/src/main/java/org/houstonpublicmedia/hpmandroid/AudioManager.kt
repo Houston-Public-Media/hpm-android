@@ -1,29 +1,18 @@
 package org.houstonpublicmedia.hpmandroid
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-
 import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import androidx.media3.common.MimeTypes
 import androidx.media3.session.MediaController
 import androidx.media3.common.MediaMetadata
-import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
-import org.houstonpublicmedia.hpmandroid.PlaybackService
 import androidx.core.net.toUri
 
 
-class AudioManager () {
-    var itemTitle by mutableStateOf<String?>("")
-    var state by mutableStateOf<StateType>(StateType.stopped)
+class AudioManager (controller: MediaController?) {
     var currentStation by mutableStateOf<Int?>(0)
     var audioType by mutableStateOf<AudioType>(AudioType.stream)
     var currentEpisode by mutableStateOf<PodcastEpisodePlayable?>(PodcastEpisodePlayable(
@@ -41,13 +30,8 @@ class AudioManager () {
         duration = ""
     ))
 
-    var player: MediaController? = null
-    var playerState: PlayerState? = null
-    enum class StateType {
-        stopped,
-        playing,
-        paused;
-    }
+    var player: MediaController? by mutableStateOf(controller)
+    var playerState: PlayerState? by mutableStateOf(player?.state())
     enum class AudioType {
         stream,
         episode;
@@ -61,9 +45,9 @@ class AudioManager () {
                 return false
             }
             mediaItem = MediaItem.Builder()
-                .setMediaId("media-1")
+                .setMediaId("media-" + episode.id)
                 .setUri(episode.attachments.url)
-                .setMimeType(MimeTypes.APPLICATION_ID3)
+                .setMimeType(MimeTypes.AUDIO_MPEG)
                 .setMediaMetadata(MediaMetadata.Builder()
                     .setAlbumTitle(wpDateFormatter(episode.date_gmt))
                     .setTitle(episode.episodeTitle)
@@ -76,13 +60,10 @@ class AudioManager () {
                 return false
             }
             mediaItem = MediaItem.Builder()
-                .setMediaId("media-1")
-                .setUri(station.aacSource)
-                .setMimeType(MimeTypes.APPLICATION_ICY)
+                .setMediaId("media-" + station.id)
+                .setUri(station.hlsSource)
+                .setMimeType(MimeTypes.APPLICATION_M3U8)
                 .setMediaMetadata(MediaMetadata.Builder()
-                    .setAlbumTitle(nowPlaying?.album)
-                    .setTitle(nowPlaying?.title)
-                    .setArtist(nowPlaying?.artist)
                     .setArtworkUri(station.artwork.toUri())
                     .build())
                 .build()
@@ -96,11 +77,18 @@ class AudioManager () {
     }
     fun play() {
         player?.play()
-        state = StateType.playing
     }
 
     fun pause() {
         player?.pause()
-        state = StateType.paused
+    }
+    fun stop() {
+        player?.stop()
+    }
+    fun skipForward() {
+        player?.seekForward()
+    }
+    fun skipBackwards() {
+        player?.seekBack()
     }
 }

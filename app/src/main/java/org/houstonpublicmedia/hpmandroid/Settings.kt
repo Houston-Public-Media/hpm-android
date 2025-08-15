@@ -1,5 +1,6 @@
 package org.houstonpublicmedia.hpmandroid
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -17,10 +18,16 @@ fun SettingsScreen(data: StationData) {
             .padding(all = 0.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Text(
-            "Settings",
-            modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 16.dp, bottom = 4.dp),
-            fontWeight = FontWeight.Bold
-        )
+        DayWeather(data)
+        Column(
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 0.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                "Settings",
+                modifier = Modifier.padding(start = 0.dp, end = 0.dp, top = 8.dp, bottom = 0.dp),
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }

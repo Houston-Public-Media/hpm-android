@@ -26,15 +26,18 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
@@ -67,7 +70,7 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             HPMAndroidTheme {
-                MainScaffold(viewModel.stationData, viewModel.audioManager)
+                MainScaffold(viewModel.stationData)
             }
         }
     }
@@ -76,9 +79,6 @@ class MainActivity : ComponentActivity() {
 class MainViewModel : ViewModel() {
     var stationData by mutableStateOf(StationData())
         private set // Make the setter private to control updates from within ViewModel
-
-    var audioManager by mutableStateOf(AudioManager())
-        private set
 
     fun loadStationData() {
         viewModelScope.launch { // Use viewModelScope for automatic cancellation
@@ -89,7 +89,6 @@ class MainViewModel : ViewModel() {
             stationData.categories = StationRepository.updateCategories(stationData.categoryList)
             while (true) {
                 stationData.nowPlaying = StationRepository.updateNowPlaying()
-                Log.d("MainViewModel", "Updated Now Playing")
                 delay(60000L)
             }
         }
@@ -120,13 +119,12 @@ val topLevelRoutes = listOf(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScaffold(data: StationData, audioManager: AudioManager) {
+fun MainScaffold(data: StationData) {
     val stationData = remember { data }
     val uriHandler = LocalUriHandler.current
     val navController = rememberNavController()
     val mediaController by rememberManagedMediaController()
-    val playback = remember { audioManager }
-    playback.player = mediaController
+    val playback = AudioManager(controller = mediaController)
     Scaffold(
         topBar = {
             TopAppBar(
@@ -243,6 +241,6 @@ fun MainScaffold(data: StationData, audioManager: AudioManager) {
 @Composable
 fun TodayPreview() {
     HPMAndroidTheme {
-       MainScaffold(StationData(), AudioManager())
+       MainScaffold(StationData())
     }
 }

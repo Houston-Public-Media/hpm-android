@@ -16,7 +16,6 @@ import android.content.Context
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import androidx.annotation.OptIn
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.RememberObserver
@@ -54,7 +53,6 @@ import com.google.common.util.concurrent.MoreExecutors
 
 @UnstableApi
 class PlaybackService : MediaSessionService() {
-
     private var _mediaSession: MediaSession? = null
     private val mediaSession get() = _mediaSession!!
 
@@ -71,7 +69,6 @@ class PlaybackService : MediaSessionService() {
      */
     override fun onCreate() {
         super.onCreate() // Call the superclass method
-
         // Create an ExoPlayer instance
         val player = ExoPlayer.Builder(this).build()
 
@@ -503,12 +500,6 @@ internal class PlayerStateImpl(
 
         override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
             this@PlayerStateImpl.mediaMetadata = mediaMetadata
-            Log.d("hpmPlayerImpl", "Artist: " + mediaMetadata.artist.toString())
-			Log.d("hpmPlayerImpl", "Title: " + mediaMetadata.title.toString())
-			Log.d("hpmPlayerImpl", "Album Title: " + mediaMetadata.albumTitle.toString())
-			Log.d("hpmPlayerImpl", "Album Artist: " + mediaMetadata.albumArtist.toString())
-			Log.d("hpmPlayerImpl", "Display Title: " + mediaMetadata.displayTitle.toString())
-			Log.d("hpmPlayerImpl", "Artwork URI: " + mediaMetadata.artworkUri.toString())
         }
 
         override fun onPlaylistMetadataChanged(mediaMetadata: MediaMetadata) {
@@ -529,6 +520,7 @@ internal class PlayerStateImpl(
 
         override fun onPlaybackStateChanged(@Player.State playbackState: Int) {
             this@PlayerStateImpl.playbackState = playbackState
+            Log.d("hpmNowPlaying", "Playback State: " + playbackState.toString())
         }
 
         override fun onPlayWhenReadyChanged(
@@ -544,6 +536,7 @@ internal class PlayerStateImpl(
 
         override fun onIsPlayingChanged(isPlaying: Boolean) {
             this@PlayerStateImpl.isPlaying = isPlaying
+            Log.d("hpmNowPlaying", "Is Playing? " + isPlaying.toString())
         }
 
         override fun onRepeatModeChanged(repeatMode: Int) {

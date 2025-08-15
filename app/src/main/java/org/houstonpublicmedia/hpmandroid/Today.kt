@@ -38,14 +38,10 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.Locale
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,32 +54,12 @@ fun TodayScreen(data: StationData) {
             .padding(all = 0.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Row(
-            modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp)
-        ) {
-            Text(
-                text = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(Date()),
-                color = colorScheme.onSurface,
-                fontSize = 12.sp,
-                lineHeight = 15.sp
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Row {
-                Text(
-                    text = AnnotatedString.fromHtml(stationData.priorityData?.weather?.temperature ?: "" ),
-                    color = colorScheme.onSurface,
-                    fontSize = 12.sp,
-                    lineHeight = 15.sp
-                )
-                AsyncImage(
-                    model = stationData.priorityData?.weather?.icon,
-                    contentDescription = stationData.priorityData?.weather?.description,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .width(15.dp)
-                        .height(15.dp)
-                )
-            }
+        DayWeather(stationData)
+        if (stationData.priorityData?.breaking?.id != 0) {
+            BreakingNewsView(stationData)
+        }
+        if (stationData.priorityData?.talkshow != "") {
+            TalkShowView(stationData)
         }
         Text(
             text = "Top Stories",
@@ -147,6 +123,7 @@ fun ArticleCard(article: PriorityArticle?) {
             Text(
                 text = it,
                 color = colorScheme.onSurface,
+                fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier
                     .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 4.dp)
