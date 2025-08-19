@@ -2,12 +2,16 @@ package org.houstonpublicmedia.hpmandroid
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.media3.session.R
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.delay
@@ -49,6 +55,7 @@ import kotlin.time.toDuration
 fun ModalPlayerPopup(audioManager: AudioManager, data: StationData, iconPadding: Dp) {
 	val contentDuration = audioManager.player?.getDuration()?.toFloat() ?: 1f
 	var currentPosition by remember { mutableFloatStateOf(0f) }
+	var positionChanging = false
 	val iconSizePopup = 100.dp
 	var name = ""
 	var image = ""
@@ -90,8 +97,16 @@ fun ModalPlayerPopup(audioManager: AudioManager, data: StationData, iconPadding:
 	if (audioManager.audioType == AudioManager.AudioType.episode) {
 		Slider(
 			value = currentPosition,
-			onValueChange = { Log.d("NowPlayingSnackbar", "onValueChange") },
+			onValueChange = {
+				positionChanging = true
+				currentPosition = it
+			},
+			onValueChangeFinished = {
+				audioManager.seekTo(currentPosition.toLong())
+				positionChanging = false
+			},
 			valueRange = 0f..contentDuration,
+			steps = 1000,
 			modifier = Modifier.padding(horizontal = 8.dp)
 		)
 		Row(modifier = Modifier.padding(horizontal = 8.dp)) {
@@ -110,19 +125,33 @@ fun ModalPlayerPopup(audioManager: AudioManager, data: StationData, iconPadding:
 			)
 		}
 	} else {
-		Slider(
-			enabled = false,
-			value = 0.5f,
-			valueRange = 0f..1f,
-			onValueChange = { },
-			thumb = { Text("LIVE", color = colorScheme.onSurface) },
-			colors = SliderDefaults.colors(
-				thumbColor = colorScheme.outlineVariant,
-				activeTrackColor = colorScheme.outlineVariant,
-				inactiveTrackColor = colorScheme.outlineVariant
-			),
-			modifier = Modifier.padding(horizontal = 8.dp)
-		)
+		Box {
+			Box(
+				modifier = Modifier
+					.size(width = 375.dp, height = 8.dp)
+					.clip(RoundedCornerShape(8.dp))
+					.background(colorScheme.outlineVariant)
+					.zIndex(1f)
+					.padding(vertical = 12.dp)
+					.align(Alignment.Center)
+			)
+			Box(
+				modifier = Modifier
+					.size(width = 50.dp, height = 18.dp)
+					.background(colorScheme.surface)
+					.zIndex(2f)
+					.align(Alignment.Center)
+			)
+			Text(
+				"LIVE",
+				color = colorScheme.onSurface,
+				fontSize = 16.sp,
+				lineHeight = 18.sp,
+				modifier = Modifier
+					.zIndex(3f)
+					.align(Alignment.Center)
+			)
+		}
 	}
 	Row(
 		verticalAlignment = Alignment.CenterVertically,
@@ -211,9 +240,9 @@ fun ModalPlayerPopup(audioManager: AudioManager, data: StationData, iconPadding:
 	if (audioManager.audioType == AudioManager.AudioType.episode) {
 		if (audioManager.playerState?.isPlaying == true) {
 			LaunchedEffect(Unit) {
-				while (true) {
+				while (!positionChanging) {
 					currentPosition = audioManager.player?.currentPosition?.toFloat() ?: 0f
-					delay(1.seconds / 2)
+					delay(1.seconds)
 				}
 			}
 		}

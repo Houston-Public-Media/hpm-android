@@ -16,6 +16,7 @@ import android.content.Context
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Bundle
 import androidx.annotation.OptIn
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.RememberObserver
@@ -44,24 +45,55 @@ import androidx.media3.common.text.CueGroup
 import android.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.session.CommandButton
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import androidx.media3.session.MediaController
+import androidx.media3.session.SessionCommand
+import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
+import com.google.common.collect.ImmutableList
+import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
+
+private const val CUSTOM_COMMAND_REWIND_ACTION_ID = "REWIND_15"
+private const val CUSTOM_COMMAND_FORWARD_ACTION_ID = "FAST_FWD_15"
+enum class NotificationPlayerCustomCommandButton(
+    val customAction: String,
+    val commandButton: CommandButton,
+) {
+    REWIND(
+        customAction = CUSTOM_COMMAND_REWIND_ACTION_ID,
+        commandButton = CommandButton.Builder(androidx.media3.session.R.drawable.media3_icon_skip_back_15)
+            .setDisplayName("Rewind")
+            .setSessionCommand(SessionCommand(CUSTOM_COMMAND_REWIND_ACTION_ID, Bundle()))
+            .setIconResId(androidx.media3.session.R.drawable.media3_icon_skip_back_15)
+            .build(),
+    ),
+    FORWARD(
+        customAction = CUSTOM_COMMAND_FORWARD_ACTION_ID,
+        commandButton = CommandButton.Builder(androidx.media3.session.R.drawable.media3_icon_skip_forward_15)
+            .setDisplayName("Forward")
+            .setSessionCommand(SessionCommand(CUSTOM_COMMAND_FORWARD_ACTION_ID, Bundle()))
+            .setIconResId(androidx.media3.session.R.drawable.media3_icon_skip_forward_15)
+            .build(),
+    );
+}
 
 @UnstableApi
 class PlaybackService : MediaSessionService() {
     private var _mediaSession: MediaSession? = null
     private val mediaSession get() = _mediaSession!!
 
+    private val notificationPlayerCustomCommandButtons =
+        NotificationPlayerCustomCommandButton.entries.map { command -> command.commandButton }
+
     companion object {
         private const val NOTIFICATION_ID = 123
         private const val CHANNEL_ID = "session_notification_channel_id"
         private const val immutableFlag = PendingIntent.FLAG_IMMUTABLE
     }
-
 
     /**
      * This method is called when the service is being created.
@@ -70,13 +102,22 @@ class PlaybackService : MediaSessionService() {
     override fun onCreate() {
         super.onCreate() // Call the superclass method
         // Create an ExoPlayer instance
-        val player = ExoPlayer.Builder(this).build()
+        val player = ExoPlayer.Builder(this)
+            .setSeekForwardIncrementMs(15000L)
+            .setSeekBackIncrementMs(15000L)
+            .build()
 
         // Create a MediaSession instance
         _mediaSession = MediaSession.Builder(this, player)
             .also { builder ->
                 // Set the session activity to the PendingIntent returned by getSingleTopActivity() if it's not null
-                getSingleTopActivity()?.let { builder.setSessionActivity(it) }
+                getSingleTopActivity()?.let {
+                    builder
+                        .setSessionActivity(it)
+                        .setCallback(HpmCallback())
+                        .setMediaButtonPreferences(notificationPlayerCustomCommandButtons)
+                        .setCustomLayout(notificationPlayerCustomCommandButtons)
+                }
             }
             .build() // Build the MediaSession instance
 
@@ -84,6 +125,49 @@ class PlaybackService : MediaSessionService() {
         setListener(MediaSessionServiceListener())
     }
 
+    private inner class HpmCallback : MediaSession.Callback {
+        override fun onConnect(
+            session: MediaSession,
+            controller: MediaSession.ControllerInfo
+        ): MediaSession.ConnectionResult {
+            val connectionResult = super.onConnect(session, controller)
+            val availableSessionCommands = connectionResult.availableSessionCommands.buildUpon()
+
+            /* Registering custom player command buttons for player notification. */
+            notificationPlayerCustomCommandButtons.forEach { commandButton ->
+                commandButton.sessionCommand?.let(availableSessionCommands::add)
+            }
+
+            return MediaSession.ConnectionResult.accept(
+                availableSessionCommands.build(),
+                connectionResult.availablePlayerCommands
+            )
+        }
+
+        override fun onPostConnect(session: MediaSession, controller: MediaSession.ControllerInfo) {
+            super.onPostConnect(session, controller)
+            if (notificationPlayerCustomCommandButtons.isNotEmpty()) {
+                /* Setting custom player command buttons to mediaLibrarySession for player notification. */
+				_mediaSession?.setCustomLayout(notificationPlayerCustomCommandButtons)
+            }
+        }
+
+        override fun onCustomCommand(
+            session: MediaSession,
+            controller: MediaSession.ControllerInfo,
+            customCommand: SessionCommand,
+            args: Bundle
+        ): ListenableFuture<SessionResult> {
+            /* Handling custom command buttons from player notification. */
+            if (customCommand.customAction == NotificationPlayerCustomCommandButton.REWIND.customAction) {
+                session.player.seekBack()
+            }
+            if (customCommand.customAction == NotificationPlayerCustomCommandButton.FORWARD.customAction) {
+                session.player.seekForward()
+            }
+            return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+        }
+    }
 
     /**
      * This method is called when the system determines that the service is no longer used and is being removed.
@@ -112,7 +196,6 @@ class PlaybackService : MediaSessionService() {
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? {
         return _mediaSession
     }
-
 
     /**
      * This method is called when the service is being destroyed.
@@ -512,6 +595,7 @@ internal class PlayerStateImpl(
 
         override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
             this@PlayerStateImpl.availableCommands = availableCommands
+//            Log.d("hpmNowPlaying", "Available Commands: " + availableCommands.toString())
         }
 
         override fun onTrackSelectionParametersChanged(parameters: TrackSelectionParameters) {
@@ -520,7 +604,7 @@ internal class PlayerStateImpl(
 
         override fun onPlaybackStateChanged(@Player.State playbackState: Int) {
             this@PlayerStateImpl.playbackState = playbackState
-            Log.d("hpmNowPlaying", "Playback State: " + playbackState.toString())
+            //Log.d("hpmNowPlaying", "Playback State: " + playbackState.toString())
         }
 
         override fun onPlayWhenReadyChanged(
@@ -536,7 +620,7 @@ internal class PlayerStateImpl(
 
         override fun onIsPlayingChanged(isPlaying: Boolean) {
             this@PlayerStateImpl.isPlaying = isPlaying
-            Log.d("hpmNowPlaying", "Is Playing? " + isPlaying.toString())
+            //Log.d("hpmNowPlaying", "Is Playing? " + isPlaying.toString())
         }
 
         override fun onRepeatModeChanged(repeatMode: Int) {

@@ -242,7 +242,8 @@ fun NowPlayingSnackbar(data: StationData, audioManager: AudioManager) {
 							onDismissRequest = {
 								showBottomSheet = false
 							},
-							sheetState = sheetState
+							sheetState = sheetState,
+							containerColor = colorScheme.surface
 						) {
 							Column(
 								horizontalAlignment = Alignment.CenterHorizontally,

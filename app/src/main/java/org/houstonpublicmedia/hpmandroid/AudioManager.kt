@@ -91,4 +91,7 @@ class AudioManager (controller: MediaController?) {
     fun skipBackwards() {
         player?.seekBack()
     }
+    fun seekTo(position: Long) {
+        player?.seekTo(position)
+    }
 }
