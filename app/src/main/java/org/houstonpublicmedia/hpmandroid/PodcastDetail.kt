@@ -76,7 +76,7 @@ fun PodcastScreen(data: StationData, audioManager: AudioManager, navController: 
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate(Listen) }) {
                         Icon(
-                            painter = painterResource(R.drawable.arrow_back),
+                            painter = painterResource(R.drawable.rounded_arrow_back_ios_new_24),
                             tint = colorScheme.primary,
                             contentDescription = "Go back to Listen screen"
                         )
@@ -217,13 +217,13 @@ fun PodcastScreen(data: StationData, audioManager: AudioManager, navController: 
                                     audioManager.pause()
                                     if (audioManager.currentEpisode?.id != episode.id) {
                                         audioManager.startAudio(
-                                            audioType = AudioManager.AudioType.episode,
+                                            audioType = AudioManager.AudioType.Episode,
                                             station = null,
                                             nowPlaying = null,
                                             episode = podEp
                                         )
                                         audioManager.currentStation = episode.id
-                                        audioManager.audioType = AudioManager.AudioType.episode
+                                        audioManager.audioType = AudioManager.AudioType.Episode
                                         audioManager.currentEpisode = podEp
                                     }
                                 } else {
@@ -231,13 +231,13 @@ fun PodcastScreen(data: StationData, audioManager: AudioManager, navController: 
                                         audioManager.play()
                                     } else {
                                         audioManager.startAudio(
-                                            audioType = AudioManager.AudioType.episode,
+                                            audioType = AudioManager.AudioType.Episode,
                                             station = null,
                                             nowPlaying = null,
                                             episode = podEp
                                         )
                                         audioManager.currentStation = episode.id
-                                        audioManager.audioType = AudioManager.AudioType.episode
+                                        audioManager.audioType = AudioManager.AudioType.Episode
                                         audioManager.currentEpisode = podEp
                                     }
                                 }
@@ -295,14 +295,14 @@ fun PodcastScreen(data: StationData, audioManager: AudioManager, navController: 
                         }
                         if (audioManager.playerState?.isPlaying == true && audioManager.currentStation == episode.id) {
                             Icon(
-                                painter = painterResource(id = androidx.media3.session.R.drawable.media3_icon_pause),
+                                painter = painterResource(id = R.drawable.rounded_pause_24),
                                 contentDescription = "Pause " + episode.title,
                                 tint = colorScheme.primary,
                                 modifier = Modifier.padding(horizontal = 4.dp)
                             )
                         } else {
                             Icon(
-                                painter = painterResource(id = androidx.media3.session.R.drawable.media3_icon_play),
+                                painter = painterResource(id = R.drawable.rounded_play_arrow_24),
                                 contentDescription = "Play " + episode.title,
                                 tint = colorScheme.primary,
                                 modifier = Modifier.padding(horizontal = 4.dp)

@@ -8,13 +8,14 @@ import androidx.media3.common.MimeTypes
 import androidx.media3.session.MediaController
 import androidx.media3.common.MediaMetadata
 import androidx.annotation.OptIn
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.media3.common.util.UnstableApi
 import androidx.core.net.toUri
 
 
 class AudioManager (controller: MediaController?) {
-    var currentStation by mutableStateOf<Int?>(0)
-    var audioType by mutableStateOf<AudioType>(AudioType.stream)
+    var currentStation by mutableIntStateOf(0)
+    var audioType by mutableStateOf<AudioType>(AudioType.Stream)
     var currentEpisode by mutableStateOf<PodcastEpisodePlayable?>(PodcastEpisodePlayable(
         id = 0,
         image = "",
@@ -33,14 +34,14 @@ class AudioManager (controller: MediaController?) {
     var player: MediaController? by mutableStateOf(controller)
     var playerState: PlayerState? by mutableStateOf(player?.state())
     enum class AudioType {
-        stream,
-        episode;
+        Stream,
+        Episode;
     }
 
     @OptIn(UnstableApi::class)
     fun startAudio(audioType: AudioType, station: Station?, nowPlaying: NowPlayingStation?, episode: PodcastEpisodePlayable?): Boolean {
         var mediaItem: MediaItem? = null
-        if (audioType == AudioType.episode) {
+        if (audioType == AudioType.Episode) {
             if (episode == null) {
                 return false
             }

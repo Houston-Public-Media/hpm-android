@@ -42,7 +42,6 @@ import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
 import androidx.media3.common.text.CueGroup
-import android.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.CommandButton
@@ -52,7 +51,6 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
 import androidx.media3.session.SessionToken
-import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
@@ -65,7 +63,7 @@ enum class NotificationPlayerCustomCommandButton(
 ) {
     REWIND(
         customAction = CUSTOM_COMMAND_REWIND_ACTION_ID,
-        commandButton = CommandButton.Builder(androidx.media3.session.R.drawable.media3_icon_skip_back_15)
+        commandButton = CommandButton.Builder(R.drawable.rounded_replay_30_24)
             .setDisplayName("Rewind")
             .setSessionCommand(SessionCommand(CUSTOM_COMMAND_REWIND_ACTION_ID, Bundle()))
             .setIconResId(androidx.media3.session.R.drawable.media3_icon_skip_back_15)
@@ -73,7 +71,7 @@ enum class NotificationPlayerCustomCommandButton(
     ),
     FORWARD(
         customAction = CUSTOM_COMMAND_FORWARD_ACTION_ID,
-        commandButton = CommandButton.Builder(androidx.media3.session.R.drawable.media3_icon_skip_forward_15)
+        commandButton = CommandButton.Builder(R.drawable.rounded_forward_30_24)
             .setDisplayName("Forward")
             .setSessionCommand(SessionCommand(CUSTOM_COMMAND_FORWARD_ACTION_ID, Bundle()))
             .setIconResId(androidx.media3.session.R.drawable.media3_icon_skip_forward_15)
@@ -103,8 +101,8 @@ class PlaybackService : MediaSessionService() {
         super.onCreate() // Call the superclass method
         // Create an ExoPlayer instance
         val player = ExoPlayer.Builder(this)
-            .setSeekForwardIncrementMs(15000L)
-            .setSeekBackIncrementMs(15000L)
+            .setSeekForwardIncrementMs(30000L)
+            .setSeekBackIncrementMs(30000L)
             .build()
 
         // Create a MediaSession instance
@@ -595,7 +593,6 @@ internal class PlayerStateImpl(
 
         override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
             this@PlayerStateImpl.availableCommands = availableCommands
-//            Log.d("hpmNowPlaying", "Available Commands: " + availableCommands.toString())
         }
 
         override fun onTrackSelectionParametersChanged(parameters: TrackSelectionParameters) {

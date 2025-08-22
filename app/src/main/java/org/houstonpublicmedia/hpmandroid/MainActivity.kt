@@ -2,7 +2,6 @@ package org.houstonpublicmedia.hpmandroid
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -26,18 +25,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
@@ -52,10 +48,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import org.houstonpublicmedia.hpmandroid.ui.theme.HPMAndroidTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import org.houstonpublicmedia.hpmandroid.ui.theme.*
 
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
@@ -111,10 +107,10 @@ object Settings
 data class TopLevelRoute<T : Any>(val name: String, val route: T, val icon: Int)
 
 val topLevelRoutes = listOf(
-    TopLevelRoute("Today", Today, R.drawable.news),
-    TopLevelRoute("Listen", AudioList, R.drawable.headphones),
-    TopLevelRoute("Watch", Watch, R.drawable.live_tv),
-    TopLevelRoute("Settings", Settings, R.drawable.settings)
+    TopLevelRoute("Today", Today, R.drawable.rounded_home_24),
+    TopLevelRoute("Listen", AudioList, R.drawable.rounded_headphones_24),
+    TopLevelRoute("Watch", Watch, R.drawable.rounded_live_tv_24),
+    TopLevelRoute("Settings", Settings, R.drawable.rounded_settings_24)
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -208,7 +204,7 @@ fun MainScaffold(data: StationData) {
         containerColor = colorScheme.surfaceDim
     ) { innerPadding ->
         NavHost(navController = navController, startDestination = Today, Modifier.padding(innerPadding)) {
-            composable<Today> { TodayScreen(stationData) }
+            composable<Today> { TodayScreen(stationData, playback) }
             navigation<AudioList>(startDestination = Listen) {
                 composable<Listen> {
                     ListenScreen(

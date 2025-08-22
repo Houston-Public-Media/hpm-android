@@ -1,7 +1,5 @@
 package org.houstonpublicmedia.hpmandroid
 
-import android.media.session.PlaybackState
-import android.os.Bundle
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -57,13 +55,13 @@ fun ListenScreen(data: StationData, audioManager: AudioManager, navController: N
                                 audioManager.pause()
                             } else {
                                 audioManager.startAudio(
-                                    audioType = AudioManager.AudioType.stream,
+                                    audioType = AudioManager.AudioType.Stream,
                                     station = station,
                                     nowPlaying = data.nowPlaying?.radio[station.id],
                                     episode = null
                                 )
                                 audioManager.currentStation = station.id
-                                audioManager.audioType = AudioManager.AudioType.stream
+                                audioManager.audioType = AudioManager.AudioType.Stream
                                 audioManager.currentEpisode = null
                             }
                         }
@@ -169,7 +167,7 @@ fun ListenScreen(data: StationData, audioManager: AudioManager, navController: N
                             .weight(1f)
                     )
                     Icon(
-                        painter = painterResource(R.drawable.chevron_right),
+                        painter = painterResource(R.drawable.rounded_arrow_forward_ios_24),
                         contentDescription = "Go to " + podcast.name + " episode list",
                         tint = colorScheme.primary,
                         modifier = Modifier.padding(horizontal = 4.dp).width(35.dp).height(35.dp)

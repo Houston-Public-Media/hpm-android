@@ -1,5 +1,5 @@
 package org.houstonpublicmedia.hpmandroid.ui.theme
-import android.view.View
+
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -10,15 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-
-
-@Immutable
-data class ExtendedColorScheme(
-    val helloHoustonGreen: ColorFamily,
-    val helloHoustonOrange: ColorFamily,
-    val helloHoustonPeriwinkle: ColorFamily,
-    val houstonMattersBlue: ColorFamily,
-)
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -246,168 +237,6 @@ private val highContrastDarkColorScheme = darkColorScheme(
     surfaceContainer = surfaceContainerDarkHighContrast,
     surfaceContainerHigh = surfaceContainerHighDarkHighContrast,
     surfaceContainerHighest = surfaceContainerHighestDarkHighContrast,
-)
-
-val extendedLight = ExtendedColorScheme(
-  helloHoustonGreen = ColorFamily(
-      helloHoustonGreenLight,
-      onHelloHoustonGreenLight,
-      helloHoustonGreenContainerLight,
-      onHelloHoustonGreenContainerLight,
-  ),
-  helloHoustonOrange = ColorFamily(
-      helloHoustonOrangeLight,
-      onHelloHoustonOrangeLight,
-      helloHoustonOrangeContainerLight,
-      onHelloHoustonOrangeContainerLight,
-  ),
-  helloHoustonPeriwinkle = ColorFamily(
-      helloHoustonPeriwinkleLight,
-      onHelloHoustonPeriwinkleLight,
-      helloHoustonPeriwinkleContainerLight,
-      onHelloHoustonPeriwinkleContainerLight,
-  ),
-  houstonMattersBlue = ColorFamily(
-      houstonMattersBlueLight,
-      onHoustonMattersBlueLight,
-      houstonMattersBlueContainerLight,
-      onHoustonMattersBlueContainerLight,
-  ),
-)
-
-val extendedDark = ExtendedColorScheme(
-  helloHoustonGreen = ColorFamily(
-      helloHoustonGreenDark,
-      onHelloHoustonGreenDark,
-      helloHoustonGreenContainerDark,
-      onHelloHoustonGreenContainerDark,
-  ),
-  helloHoustonOrange = ColorFamily(
-      helloHoustonOrangeDark,
-      onHelloHoustonOrangeDark,
-      helloHoustonOrangeContainerDark,
-      onHelloHoustonOrangeContainerDark,
-  ),
-  helloHoustonPeriwinkle = ColorFamily(
-      helloHoustonPeriwinkleDark,
-      onHelloHoustonPeriwinkleDark,
-      helloHoustonPeriwinkleContainerDark,
-      onHelloHoustonPeriwinkleContainerDark,
-  ),
-  houstonMattersBlue = ColorFamily(
-      houstonMattersBlueDark,
-      onHoustonMattersBlueDark,
-      houstonMattersBlueContainerDark,
-      onHoustonMattersBlueContainerDark,
-  ),
-)
-
-val extendedLightMediumContrast = ExtendedColorScheme(
-  helloHoustonGreen = ColorFamily(
-      helloHoustonGreenLightMediumContrast,
-      onHelloHoustonGreenLightMediumContrast,
-      helloHoustonGreenContainerLightMediumContrast,
-      onHelloHoustonGreenContainerLightMediumContrast,
-  ),
-  helloHoustonOrange = ColorFamily(
-      helloHoustonOrangeLightMediumContrast,
-      onHelloHoustonOrangeLightMediumContrast,
-      helloHoustonOrangeContainerLightMediumContrast,
-      onHelloHoustonOrangeContainerLightMediumContrast,
-  ),
-  helloHoustonPeriwinkle = ColorFamily(
-      helloHoustonPeriwinkleLightMediumContrast,
-      onHelloHoustonPeriwinkleLightMediumContrast,
-      helloHoustonPeriwinkleContainerLightMediumContrast,
-      onHelloHoustonPeriwinkleContainerLightMediumContrast,
-  ),
-  houstonMattersBlue = ColorFamily(
-      houstonMattersBlueLightMediumContrast,
-      onHoustonMattersBlueLightMediumContrast,
-      houstonMattersBlueContainerLightMediumContrast,
-      onHoustonMattersBlueContainerLightMediumContrast,
-  ),
-)
-
-val extendedLightHighContrast = ExtendedColorScheme(
-  helloHoustonGreen = ColorFamily(
-      helloHoustonGreenLightHighContrast,
-      onHelloHoustonGreenLightHighContrast,
-      helloHoustonGreenContainerLightHighContrast,
-      onHelloHoustonGreenContainerLightHighContrast,
-  ),
-  helloHoustonOrange = ColorFamily(
-      helloHoustonOrangeLightHighContrast,
-      onHelloHoustonOrangeLightHighContrast,
-      helloHoustonOrangeContainerLightHighContrast,
-      onHelloHoustonOrangeContainerLightHighContrast,
-  ),
-  helloHoustonPeriwinkle = ColorFamily(
-      helloHoustonPeriwinkleLightHighContrast,
-      onHelloHoustonPeriwinkleLightHighContrast,
-      helloHoustonPeriwinkleContainerLightHighContrast,
-      onHelloHoustonPeriwinkleContainerLightHighContrast,
-  ),
-  houstonMattersBlue = ColorFamily(
-      houstonMattersBlueLightHighContrast,
-      onHoustonMattersBlueLightHighContrast,
-      houstonMattersBlueContainerLightHighContrast,
-      onHoustonMattersBlueContainerLightHighContrast,
-  ),
-)
-
-val extendedDarkMediumContrast = ExtendedColorScheme(
-  helloHoustonGreen = ColorFamily(
-      helloHoustonGreenDarkMediumContrast,
-      onHelloHoustonGreenDarkMediumContrast,
-      helloHoustonGreenContainerDarkMediumContrast,
-      onHelloHoustonGreenContainerDarkMediumContrast,
-  ),
-  helloHoustonOrange = ColorFamily(
-      helloHoustonOrangeDarkMediumContrast,
-      onHelloHoustonOrangeDarkMediumContrast,
-      helloHoustonOrangeContainerDarkMediumContrast,
-      onHelloHoustonOrangeContainerDarkMediumContrast,
-  ),
-  helloHoustonPeriwinkle = ColorFamily(
-      helloHoustonPeriwinkleDarkMediumContrast,
-      onHelloHoustonPeriwinkleDarkMediumContrast,
-      helloHoustonPeriwinkleContainerDarkMediumContrast,
-      onHelloHoustonPeriwinkleContainerDarkMediumContrast,
-  ),
-  houstonMattersBlue = ColorFamily(
-      houstonMattersBlueDarkMediumContrast,
-      onHoustonMattersBlueDarkMediumContrast,
-      houstonMattersBlueContainerDarkMediumContrast,
-      onHoustonMattersBlueContainerDarkMediumContrast,
-  ),
-)
-
-val extendedDarkHighContrast = ExtendedColorScheme(
-  helloHoustonGreen = ColorFamily(
-      helloHoustonGreenDarkHighContrast,
-      onHelloHoustonGreenDarkHighContrast,
-      helloHoustonGreenContainerDarkHighContrast,
-      onHelloHoustonGreenContainerDarkHighContrast,
-  ),
-  helloHoustonOrange = ColorFamily(
-      helloHoustonOrangeDarkHighContrast,
-      onHelloHoustonOrangeDarkHighContrast,
-      helloHoustonOrangeContainerDarkHighContrast,
-      onHelloHoustonOrangeContainerDarkHighContrast,
-  ),
-  helloHoustonPeriwinkle = ColorFamily(
-      helloHoustonPeriwinkleDarkHighContrast,
-      onHelloHoustonPeriwinkleDarkHighContrast,
-      helloHoustonPeriwinkleContainerDarkHighContrast,
-      onHelloHoustonPeriwinkleContainerDarkHighContrast,
-  ),
-  houstonMattersBlue = ColorFamily(
-      houstonMattersBlueDarkHighContrast,
-      onHoustonMattersBlueDarkHighContrast,
-      houstonMattersBlueContainerDarkHighContrast,
-      onHoustonMattersBlueContainerDarkHighContrast,
-  ),
 )
 
 @Immutable

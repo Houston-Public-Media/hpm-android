@@ -22,7 +22,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Slider
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -59,7 +58,7 @@ fun NowPlayingSnackbar(data: StationData, audioManager: AudioManager) {
 			)
 			BottomAppBar(
 				actions = {
-					if (audioManager.audioType == AudioManager.AudioType.episode) {
+					if (audioManager.audioType == AudioManager.AudioType.Episode) {
 						AsyncImage(
 							model = audioManager.currentEpisode!!.image,
 							contentDescription = audioManager.currentEpisode!!.podcastName,
@@ -85,8 +84,8 @@ fun NowPlayingSnackbar(data: StationData, audioManager: AudioManager) {
 									.padding(all = iconPadding)
 							) {
 								Icon(
-									painter = painterResource(id = androidx.media3.session.R.drawable.media3_icon_skip_back_15),
-									contentDescription = "Play audio",
+									painter = painterResource(id = R.drawable.rounded_replay_30_24),
+									contentDescription = "Skipp back 30 seconds",
 									tint = colorScheme.primary,
 									modifier = Modifier
 										.width(iconSize)
@@ -109,7 +108,7 @@ fun NowPlayingSnackbar(data: StationData, audioManager: AudioManager) {
 							) {
 								if (audioManager.playerState?.isPlaying == true) {
 									Icon(
-										painter = painterResource(id = androidx.media3.session.R.drawable.media3_icon_pause),
+										painter = painterResource(id = R.drawable.rounded_pause_24),
 										contentDescription = "Pause audio",
 										tint = colorScheme.primary,
 										modifier = Modifier
@@ -119,7 +118,7 @@ fun NowPlayingSnackbar(data: StationData, audioManager: AudioManager) {
 									)
 								} else {
 									Icon(
-										painter = painterResource(id = androidx.media3.session.R.drawable.media3_icon_play),
+										painter = painterResource(id = R.drawable.rounded_play_arrow_24),
 										contentDescription = "Play audio",
 										tint = colorScheme.primary,
 										modifier = Modifier
@@ -139,7 +138,7 @@ fun NowPlayingSnackbar(data: StationData, audioManager: AudioManager) {
 									.padding(all = iconPadding)
 							) {
 								Icon(
-									painter = painterResource(id = androidx.media3.session.R.drawable.media3_icon_skip_forward_15),
+									painter = painterResource(id = R.drawable.rounded_forward_30_24),
 									contentDescription = "Play audio",
 									tint = colorScheme.primary,
 									modifier = Modifier
@@ -176,7 +175,7 @@ fun NowPlayingSnackbar(data: StationData, audioManager: AudioManager) {
 						) {
 							if (audioManager.playerState?.isPlaying == true) {
 								Icon(
-									painter = painterResource(id = androidx.media3.session.R.drawable.media3_icon_pause),
+									painter = painterResource(id = R.drawable.rounded_pause_24),
 									contentDescription = "Pause audio",
 									tint = colorScheme.primary,
 									modifier = Modifier
@@ -186,7 +185,7 @@ fun NowPlayingSnackbar(data: StationData, audioManager: AudioManager) {
 								)
 							} else {
 								Icon(
-									painter = painterResource(id = androidx.media3.session.R.drawable.media3_icon_play),
+									painter = painterResource(id = R.drawable.rounded_play_arrow_24),
 									contentDescription = "Play audio",
 									tint = colorScheme.primary,
 									modifier = Modifier
@@ -275,8 +274,8 @@ fun NowPlayingSnackbar(data: StationData, audioManager: AudioManager) {
 						elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
 					) {
 						Icon(
-							painter = painterResource(R.drawable.keyboard_arrow_up),
-							"Localized description"
+							painter = painterResource(R.drawable.rounded_keyboard_arrow_up_24),
+							"Open player controls"
 						)
 					}
 				},

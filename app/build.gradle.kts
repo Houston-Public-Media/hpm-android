@@ -7,15 +7,14 @@ plugins {
 
 android {
     namespace = "org.houstonpublicmedia.hpmandroid"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "org.houstonpublicmedia.hpmandroid"
         minSdk = 33
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

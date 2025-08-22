@@ -46,7 +46,7 @@ import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TodayScreen(data: StationData) {
+fun TodayScreen(data: StationData, audioManager: AudioManager) {
     val stationData = remember { data }
     val scrollState = rememberScrollState()
     Column(
@@ -58,9 +58,9 @@ fun TodayScreen(data: StationData) {
         if (stationData.priorityData?.breaking?.id != 0) {
             BreakingNewsView(stationData)
         }
-        if (stationData.priorityData?.talkshow != "") {
-            TalkShowView(stationData)
-        }
+        //if (stationData.priorityData?.talkshow == "") {
+            TalkShowView(stationData, audioManager)
+        //}
         Text(
             text = "Top Stories",
             fontWeight = FontWeight.Bold,
@@ -141,7 +141,7 @@ fun ArticleCard(article: PriorityArticle?) {
                 )
             }
             Icon(
-                painter = painterResource(id = R.drawable.arrow_outward),
+                painter = painterResource(id = R.drawable.rounded_arrow_outward_24),
                 contentDescription = "Open link to article",
                 tint = colorScheme.primary,
                 modifier = Modifier
@@ -198,7 +198,7 @@ fun ArticleRow(article: ArticleData?) {
             }
         }
         Icon(
-            painter = painterResource(id = R.drawable.arrow_outward),
+            painter = painterResource(id = R.drawable.rounded_arrow_outward_24),
             contentDescription = "Open link to article",
             tint = colorScheme.primary,
             modifier = Modifier

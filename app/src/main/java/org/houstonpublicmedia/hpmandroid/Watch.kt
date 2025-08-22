@@ -1,5 +1,6 @@
 package org.houstonpublicmedia.hpmandroid
 
+import android.annotation.SuppressLint
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebView.setWebContentsDebuggingEnabled
@@ -16,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 
+@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun WatchScreen() {
     // Declare a string that contains a url
